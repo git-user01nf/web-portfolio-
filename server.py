@@ -1,29 +1,18 @@
 ﻿import flet as ft
 import os
-import sys
-
-# Add the current directory to path to ensure 'pages' can be found
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-
-try:
-    from main import main as app_main
-    print("Successfully imported main app logic.")
-except ImportError as e:
-    print(f"IMPORT ERROR: {e}")
-    # Fallback to a simple text if main fails to load
-    def app_main(page: ft.Page):
-        page.add(ft.Text(f"Critical Load Error: {e}"))
+from main import main as app_main
 
 if __name__ == "__main__":
-    # Fly.io tells the app which port to use via the PORT environment variable
+    # Fly.io tells the app which port to use via the PORT environment variable.
+    # If not found, it defaults to 8080.
     port = int(os.getenv("PORT", 8080))
     
-    print(f"Starting Flet server on port {port}...")
+    print(f"--- STARTING SYSTEM ON PORT {port} ---")
     
     ft.app(
         target=app_main,
-        host="0.0.0.0",  # MUST be 0.0.0.0 for Fly.io
-        port=port,
-        view=None,       # None is correct for server-side hosting
-        assets_dir="assets"
+        host="0.0.0.0",   # MANDATORY: Allows external traffic
+        port=port,        # MANDATORY: Must match fly.toml internal_port
+        assets_dir="assets",
+        view=None         # MANDATORY: Ensures it runs as a web server only
     )
